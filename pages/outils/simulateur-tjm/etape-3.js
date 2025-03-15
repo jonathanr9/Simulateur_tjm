@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Button from "../../../components/ui/Button";
 import { sessionStore, localStore } from "../../../utils/storage";
 
 export default function SimulateurTJMEtape3Page() {
@@ -29,71 +28,65 @@ export default function SimulateurTJMEtape3Page() {
   };
 
   return (
-    <div className="pt-8 pb-16">
-      <div className="bg-blue-700 py-16 mb-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-white text-center">
-            Simulateur TJM
-          </h1>
-          <p className="text-white/90 text-center mt-4 max-w-2xl mx-auto">
-            Demande enregistrée
-          </p>
+    <div>
+      <div className="header">
+        <div className="container">
+          <h1>Simulateur TJM</h1>
+          <p>Demande enregistrée</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
+      <div className="container">
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          {/* Utiliser legacyBehavior avec Link */}
           <Link href="/" legacyBehavior>
-            <Button variant="ghost" className="mb-8">
+            <a className="btn btn-outline" style={{ marginBottom: "20px", display: "inline-block" }}>
               Retour à l'accueil
-            </Button>
+            </a>
           </Link>
 
           {/* Étape 3 : Confirmation */}
-          <div className="bg-white rounded-xl p-8 shadow-lg text-center">
-            <div className="flex items-center justify-center mb-4">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center font-bold">
-                  1
-                </div>
-                <div className="w-8 h-1 bg-blue-600"></div>
-                <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center font-bold">
-                  2
-                </div>
-                <div className="w-8 h-1 bg-blue-600"></div>
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-                  3
-                </div>
+          <div className="simulator-card text-center">
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div className="step-number step-inactive">1</div>
+                <div className="step-line step-line-active"></div>
+                <div className="step-number step-inactive">2</div>
+                <div className="step-line step-line-active"></div>
+                <div className="step-number step-active">3</div>
               </div>
             </div>
 
-            <svg className="h-20 w-20 text-green-500 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <div style={{ color: "#28a745", fontSize: "60px", marginBottom: "20px" }}>
+              ✓
+            </div>
 
-            <h2 className="text-2xl font-semibold text-blue-700 mb-4">Votre demande a été enregistrée !</h2>
+            <h2 style={{ color: "#0F4C5C", fontSize: "1.5rem", fontWeight: "600", marginBottom: "20px" }}>
+              Votre demande a été enregistrée !
+            </h2>
 
-            <p className="text-gray-600 mb-8 max-w-xl mx-auto">
+            <p style={{ maxWidth: "600px", margin: "0 auto 30px", fontSize: "1.1rem" }}>
               Merci pour votre intérêt{contactData?.nom ? `, ${contactData.nom}` : ''}. Vos informations ont été transmises à notre équipe. Nous vous contacterons très
               prochainement pour discuter de votre situation et vous proposer un accompagnement personnalisé.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div style={{ display: "flex", flexDirection: "column", gap: "15px", alignItems: "center" }}>
               
                 href="https://calendly.com/votre-lien-calendly"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleRdvClick}
+                className="btn btn-primary"
+                style={{ display: "inline-block" }}
               >
-                <Button>
-                  Prendre rendez-vous directement
-                </Button>
+                Prendre rendez-vous directement
               </a>
 
+              {/* Utiliser legacyBehavior avec Link */}
               <Link href="/" legacyBehavior>
-                <Button variant="outline">
+                <a className="btn btn-outline">
                   Retour à l'accueil
-                </Button>
+                </a>
               </Link>
             </div>
           </div>
