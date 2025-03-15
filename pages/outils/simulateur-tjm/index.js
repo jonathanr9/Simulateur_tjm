@@ -100,7 +100,8 @@ export default function SimulateurTJMPage() {
 
       <div className="container">
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-          <Link href="/">
+          {/* Correction: utiliser legacyBehavior avec Link */}
+          <Link href="/" legacyBehavior>
             <a className="btn btn-outline" style={{ marginBottom: "20px", display: "inline-block" }}>
               Retour à l'accueil
             </a>

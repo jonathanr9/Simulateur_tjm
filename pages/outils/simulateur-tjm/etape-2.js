@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Button from "../../../components/ui/Button";
-import Input from "../../../components/ui/Input";
-import Label from "../../../components/ui/Label";
 import { localStore, sessionStore } from "../../../utils/storage";
 
 export default function SimulateurTJMEtape2Page() {
@@ -34,7 +31,7 @@ export default function SimulateurTJMEtape2Page() {
     e.preventDefault();
 
     if (!consentRGPD) {
-      alert("Veuillez accepter les conditions d'utilisation et la politique de confidentialité.");
+      alert("Veuillez accepter les conditions d'utilisation.");
       return;
     }
 
@@ -55,21 +52,13 @@ export default function SimulateurTJMEtape2Page() {
         utm: utmParams
       };
 
-      // Envoyer les données à l'API
-      const response = await fetch("/api/saveToSheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(contactData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Erreur lors de l'enregistrement");
-      }
-
+      // API temporairement simulée pour développement
+      // En production, faites un appel API réel ici
+      console.log("Données à envoyer:", contactData);
+      
+      // Simuler une API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Stocker les données du formulaire
       sessionStore.setItem("contactData", contactData);
 
@@ -87,118 +76,101 @@ export default function SimulateurTJMEtape2Page() {
   };
 
   return (
-    <div className="pt-8 pb-16">
-      <div className="bg-blue-700 py-16 mb-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-white text-center">
-            Simulateur TJM
-          </h1>
-          <p className="text-white/90 text-center mt-4 max-w-2xl mx-auto">
-            Vos informations de contact
-          </p>
+    <div>
+      <div className="header">
+        <div className="container">
+          <h1>Simulateur TJM</h1>
+          <p>Vos informations de contact</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
+      <div className="container">
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          {/* Utiliser legacyBehavior avec Link */}
           <Link href="/outils/simulateur-tjm" legacyBehavior>
-            <Button variant="ghost" className="mb-8">
+            <a className="btn btn-outline" style={{ marginBottom: "20px", display: "inline-block" }}>
               Retour à l'étape 1
-            </Button>
+            </a>
           </Link>
 
           {/* Étape 2 : Informations de contact */}
-          <div className="bg-white rounded-xl p-8 shadow-lg">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-semibold text-blue-700 flex items-center">
+          <div className="simulator-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
+              <h2 style={{ color: "#0F4C5C", fontSize: "1.5rem", fontWeight: "600" }}>
                 Étape 2 : Vos informations
               </h2>
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center font-bold">
-                  1
-                </div>
-                <div className="w-8 h-1 bg-blue-600"></div>
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-                  2
-                </div>
-                <div className="w-8 h-1 bg-gray-300"></div>
-                <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center font-bold">
-                  3
-                </div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div className="step-number step-inactive">1</div>
+                <div className="step-line step-line-active"></div>
+                <div className="step-number step-active">2</div>
+                <div className="step-line"></div>
+                <div className="step-number step-inactive">3</div>
               </div>
             </div>
 
             {simulateurData && (
-              <div className="mb-8 p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-700 mb-2">Récapitulatif</h3>
-                <p className="text-gray-600">
-                  Avec un TJM de <span className="font-semibold">{simulateurData.tjm} €</span>,
-                  <span className="font-semibold"> {simulateurData.joursParSemaine} jours</span> par semaine et
-                  <span className="font-semibold"> {simulateurData.semainesParAn} semaines</span> par an, votre chiffre
+              <div className="recap-box">
+                <h3 style={{ fontSize: "1.2rem", marginBottom: "15px" }}>Récapitulatif</h3>
+                <p>
+                  Avec un TJM de <strong>{simulateurData.tjm} €</strong>,
+                  <strong> {simulateurData.joursParSemaine} jours</strong> par semaine et
+                  <strong> {simulateurData.semainesParAn} semaines</strong> par an, votre chiffre
                   d'affaires annuel estimé est de
-                  <span className="font-semibold"> {simulateurData.caAnnuel.toLocaleString("fr-FR")} € HT</span>.
+                  <strong> {simulateurData.caAnnuel.toLocaleString("fr-FR")} € HT</strong>.
                 </p>
-                <p className="text-gray-600 mt-4">
-                  <span className="font-semibold">Rendez-vous de découverte</span>
-                  <br />
+                <p style={{ marginTop: "15px" }}>
+                  <strong>Rendez-vous de découverte</strong><br />
                   Nous prenons le temps de comprendre votre activité, vos besoins et vos objectifs lors d'un premier
                   rendez-vous gratuit. Nous vous proposons une solution sur mesure adaptée à votre situation.
                 </p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit}>
               {/* Nom */}
-              <div>
-                <Label htmlFor="nom" className="text-gray-700 font-medium">
-                  Nom complet *
-                </Label>
-                <Input
-                  id="nom"
+              <div className="form-group">
+                <label className="form-label">Nom complet *</label>
+                <input
+                  type="text"
                   value={nom}
                   onChange={(e) => setNom(e.target.value)}
                   placeholder="Ex: Jean Dupont"
                   required
-                  className="mt-1"
+                  className="form-input"
                 />
               </div>
 
               {/* Email */}
-              <div>
-                <Label htmlFor="email" className="text-gray-700 font-medium">
-                  Email *
-                </Label>
-                <Input
-                  id="email"
+              <div className="form-group">
+                <label className="form-label">Email *</label>
+                <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Ex: jean.dupont@example.com"
                   required
-                  className="mt-1"
+                  className="form-input"
                 />
               </div>
 
               {/* Téléphone */}
-              <div>
-                <Label htmlFor="telephone" className="text-gray-700 font-medium">
-                  Téléphone *
-                </Label>
-                <Input
-                  id="telephone"
+              <div className="form-group">
+                <label className="form-label">Téléphone *</label>
+                <input
+                  type="tel"
                   value={telephone}
                   onChange={(e) => setTelephone(e.target.value)}
                   placeholder="Ex: 0612345678"
                   required
-                  className="mt-1"
+                  className="form-input"
                 />
               </div>
 
               {/* Statut actuel */}
-              <div>
-                <Label className="text-gray-700 font-medium block mb-2">Votre statut actuel *</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center">
+              <div className="form-group">
+                <label className="form-label">Votre statut actuel *</label>
+                <div style={{ marginTop: "10px" }}>
+                  <div style={{ marginBottom: "8px" }}>
                     <input
                       type="radio"
                       id="auto-entrepreneur"
@@ -206,11 +178,11 @@ export default function SimulateurTJMEtape2Page() {
                       value="auto-entrepreneur"
                       checked={statut === "auto-entrepreneur"}
                       onChange={() => setStatut("auto-entrepreneur")}
-                      className="mr-2"
+                      style={{ marginRight: "10px" }}
                     />
                     <label htmlFor="auto-entrepreneur">Auto-entrepreneur</label>
                   </div>
-                  <div className="flex items-center">
+                  <div style={{ marginBottom: "8px" }}>
                     <input
                       type="radio"
                       id="eurl-sarl"
@@ -218,11 +190,11 @@ export default function SimulateurTJMEtape2Page() {
                       value="eurl-sarl"
                       checked={statut === "eurl-sarl"}
                       onChange={() => setStatut("eurl-sarl")}
-                      className="mr-2"
+                      style={{ marginRight: "10px" }}
                     />
                     <label htmlFor="eurl-sarl">EURL / SARL</label>
                   </div>
-                  <div className="flex items-center">
+                  <div style={{ marginBottom: "8px" }}>
                     <input
                       type="radio"
                       id="sasu-sas"
@@ -230,11 +202,11 @@ export default function SimulateurTJMEtape2Page() {
                       value="sasu-sas"
                       checked={statut === "sasu-sas"}
                       onChange={() => setStatut("sasu-sas")}
-                      className="mr-2"
+                      style={{ marginRight: "10px" }}
                     />
                     <label htmlFor="sasu-sas">SASU / SAS</label>
                   </div>
-                  <div className="flex items-center">
+                  <div style={{ marginBottom: "8px" }}>
                     <input
                       type="radio"
                       id="salarie"
@@ -242,11 +214,11 @@ export default function SimulateurTJMEtape2Page() {
                       value="salarie"
                       checked={statut === "salarie"}
                       onChange={() => setStatut("salarie")}
-                      className="mr-2"
+                      style={{ marginRight: "10px" }}
                     />
                     <label htmlFor="salarie">Salarié</label>
                   </div>
-                  <div className="flex items-center">
+                  <div>
                     <input
                       type="radio"
                       id="autre"
@@ -254,7 +226,7 @@ export default function SimulateurTJMEtape2Page() {
                       value="autre"
                       checked={statut === "autre"}
                       onChange={() => setStatut("autre")}
-                      className="mr-2"
+                      style={{ marginRight: "10px" }}
                     />
                     <label htmlFor="autre">Autre</label>
                   </div>
@@ -262,31 +234,28 @@ export default function SimulateurTJMEtape2Page() {
               </div>
 
               {/* Message */}
-              <div>
-                <Label htmlFor="message" className="text-gray-700 font-medium">
-                  Message (facultatif)
-                </Label>
+              <div className="form-group">
+                <label className="form-label">Message (facultatif)</label>
                 <textarea
-                  id="message"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Précisez votre demande ou vos questions..."
-                  className="mt-1 min-h-[100px] w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="form-input"
+                  style={{ minHeight: "100px" }}
                 />
               </div>
 
               {/* Consentement RGPD */}
-              <div className="mt-6">
-                <div className="flex items-start space-x-2">
+              <div className="form-group">
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
                   <input
                     type="checkbox"
                     id="rgpd"
                     checked={consentRGPD}
                     onChange={(e) => setConsentRGPD(e.target.checked)}
-                    className="mt-1"
-                    required
+                    style={{ marginRight: "10px", marginTop: "3px" }}
                   />
-                  <label htmlFor="rgpd" className="text-sm text-gray-600">
+                  <label htmlFor="rgpd" style={{ fontSize: "0.9rem", lineHeight: "1.4" }}>
                     J'accepte que mes données soient utilisées pour me recontacter. Ces données ne seront jamais vendues à des tiers.
                     En soumettant ce formulaire, j'accepte la politique de confidentialité du site. *
                   </label>
@@ -294,13 +263,14 @@ export default function SimulateurTJMEtape2Page() {
               </div>
 
               {/* Bouton suivant */}
-              <div className="mt-8 flex justify-end">
-                <Button 
+              <div style={{ marginTop: "30px", display: "flex", justifyContent: "flex-end" }}>
+                <button 
                   type="submit" 
+                  className="btn btn-primary"
                   disabled={isLoading}
                 >
                   {isLoading ? "Envoi en cours..." : "Envoyer ma demande"}
-                </Button>
+                </button>
               </div>
             </form>
           </div>
