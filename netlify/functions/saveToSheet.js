@@ -16,13 +16,16 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    // Pendant le développement, simuler une sauvegarde réussie
-    // En production, utiliser les vraies credentials et spreadsheet
-    console.log('Données reçues:', data);
-    
-    // Pour le test, on peut commenter le code du Google Sheets
-    /*
-    // Configurer l'authentification avec le service account
+    // Pour le développement local, simuler une réponse réussie
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Données reçues (mode dev):', data);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ success: true, message: 'Données sauvegardées localement' })
+      };
+    }
+
+    // En production, se connecter à Google Sheets
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -36,31 +39,19 @@ exports.handler = async function(event, context) {
     // Sélectionner la première feuille
     const sheet = doc.sheetsByIndex[0];
 
-    // Ajouter une nouvelle ligne
+    // Ajouter une nouvelle ligne avec uniquement les champs demandés
     await sheet.addRow({
       Date: new Date().toISOString(),
       Nom: data.nom || '',
       Email: data.email || '',
       Téléphone: data.telephone || '',
       Statut: data.statut || '',
-      TJM: data.simulateurData?.tjm || '',
-      JoursParSemaine: data.simulateurData?.joursParSemaine || '',
-      SemainesParAn: data.simulateurData?.semainesParAn || '',
-      CAEstimé: data.simulateurData?.caAnnuel || '',
-      Message: data.message || '',
-      UTM_Source: data.utm?.source || '',
-      UTM_Medium: data.utm?.medium || '',
-      UTM_Campaign: data.utm?.campaign || ''
+      Message: data.message || ''
     });
-    */
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ 
-        success: true, 
-        message: 'Données enregistrées avec succès',
-        id: 'sim_' + new Date().getTime() // Générer un ID unique pour simuler
-      })
+      body: JSON.stringify({ success: true, message: 'Données enregistrées avec succès' })
     };
   } catch (error) {
     console.error('Erreur:', error);
