@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Button from "../../../components/ui/Button";
-import Input from "../../../components/ui/Input";
-import Label from "../../../components/ui/Label";
-import Slider from "../../../components/ui/Slider";
 import { localStore, sessionStore } from "../../../utils/storage";
 import { captureUtmParams } from "../../../utils/tracking";
 
@@ -94,185 +90,176 @@ export default function SimulateurTJMPage() {
   };
 
   return (
-    <div className="pt-8 pb-16">
-      <div className="bg-blue-700 py-16 mb-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center">
-            Simulateur TJM
-          </h1>
-          <p className="text-white/90 text-center mt-3 sm:mt-4 max-w-2xl mx-auto px-4 sm:px-0">
-            Calculez votre Taux Journalier Moyen et estimez vos revenus
-          </p>
+    <div>
+      <div className="header">
+        <div className="container">
+          <h1>Simulateur TJM</h1>
+          <p>Calculez votre Taux Journalier Moyen et estimez vos revenus</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
-          <Link href="/" legacyBehavior>
-            <Button variant="ghost" className="mb-8">
+      <div className="container">
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <Link href="/">
+            <a className="btn btn-outline" style={{ marginBottom: "20px", display: "inline-block" }}>
               Retour à l'accueil
-            </Button>
+            </a>
           </Link>
 
           {/* Étape 1 : Simulateur */}
-          <div className="bg-white rounded-xl p-5 sm:p-8 shadow-lg">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-semibold text-blue-700 flex items-center">
+          <div className="simulator-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
+              <h2 style={{ color: "#0F4C5C", fontSize: "1.5rem", fontWeight: "600" }}>
                 Étape 1 : Paramètres
               </h2>
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-                  1
-                </div>
-                <div className="w-8 h-1 bg-gray-300"></div>
-                <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center font-bold">
-                  2
-                </div>
-                <div className="w-8 h-1 bg-gray-300"></div>
-                <div className="w-8 h-8 rounded-full bg-gray-300 text-gray-500 flex items-center justify-center font-bold">
-                  3
-                </div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div className="step-number step-active">1</div>
+                <div className="step-line"></div>
+                <div className="step-number step-inactive">2</div>
+                <div className="step-line"></div>
+                <div className="step-number step-inactive">3</div>
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div>
               {/* TJM */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="tjm" className="text-gray-700 font-medium">
-                    Taux Journalier Moyen (€ HT)
-                  </Label>
-                  <Input
-                    id="tjm-value"
+              <div className="form-group">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label className="form-label">Taux Journalier Moyen (€ HT)</label>
+                  <input
                     type="number"
                     value={tjm}
                     onChange={(e) => setTjm(Number(e.target.value))}
-                    className="w-24 text-right"
+                    className="form-input"
+                    style={{ width: "80px", textAlign: "right" }}
                   />
                 </div>
-                <Slider
-                  id="tjm"
-                  min={300}
-                  max={1500}
-                  step={10}
-                  value={[tjm]}
-                  onValueChange={(value) => setTjm(value[0])}
-                  className="my-4"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>300 €</span>
-                  <span>1500 €</span>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min={300}
+                    max={1500}
+                    step={10}
+                    value={tjm}
+                    onChange={(e) => setTjm(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  />
+                  <div className="slider-values">
+                    <span>300 €</span>
+                    <span>1500 €</span>
+                  </div>
                 </div>
               </div>
 
               {/* Jours par semaine */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="jours-semaine" className="text-gray-700 font-medium">
-                    Jours travaillés par semaine
-                  </Label>
-                  <Input
-                    id="jours-semaine-value"
+              <div className="form-group">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label className="form-label">Jours travaillés par semaine</label>
+                  <input
                     type="number"
                     value={joursParSemaine}
                     onChange={(e) => setJoursParSemaine(Number(e.target.value))}
                     min={1}
                     max={7}
-                    className="w-24 text-right"
+                    className="form-input"
+                    style={{ width: "80px", textAlign: "right" }}
                   />
                 </div>
-                <Slider
-                  id="jours-semaine"
-                  min={1}
-                  max={7}
-                  step={0.5}
-                  value={[joursParSemaine]}
-                  onValueChange={(value) => setJoursParSemaine(value[0])}
-                  className="my-4"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>1 jour</span>
-                  <span>7 jours</span>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min={1}
+                    max={7}
+                    step={0.5}
+                    value={joursParSemaine}
+                    onChange={(e) => setJoursParSemaine(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  />
+                  <div className="slider-values">
+                    <span>1 jour</span>
+                    <span>7 jours</span>
+                  </div>
                 </div>
               </div>
 
               {/* Semaines par an */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="semaines-an" className="text-gray-700 font-medium">
-                    Semaines travaillées par an
-                  </Label>
-                  <Input
-                    id="semaines-an-value"
+              <div className="form-group">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label className="form-label">Semaines travaillées par an</label>
+                  <input
                     type="number"
                     value={semainesParAn}
                     onChange={(e) => setSemainesParAn(Number(e.target.value))}
                     min={20}
                     max={52}
-                    className="w-24 text-right"
+                    className="form-input"
+                    style={{ width: "80px", textAlign: "right" }}
                   />
                 </div>
-                <Slider
-                  id="semaines-an"
-                  min={20}
-                  max={52}
-                  step={1}
-                  value={[semainesParAn]}
-                  onValueChange={(value) => setSemainesParAn(value[0])}
-                  className="my-4"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>20 semaines</span>
-                  <span>52 semaines</span>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min={20}
+                    max={52}
+                    step={1}
+                    value={semainesParAn}
+                    onChange={(e) => setSemainesParAn(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  />
+                  <div className="slider-values">
+                    <span>20 semaines</span>
+                    <span>52 semaines</span>
+                  </div>
                 </div>
               </div>
 
               {/* Charges fixes mensuelles */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="charges-fixes" className="text-gray-700 font-medium">
-                    Charges fixes mensuelles (€)
-                  </Label>
-                  <Input
-                    id="charges-fixes-value"
+              <div className="form-group">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <label className="form-label">Charges fixes mensuelles (€)</label>
+                  <input
                     type="number"
                     value={chargesFixes}
                     onChange={(e) => setChargesFixes(Number(e.target.value))}
-                    className="w-24 text-right"
+                    className="form-input"
+                    style={{ width: "80px", textAlign: "right" }}
                   />
                 </div>
-                <Slider
-                  id="charges-fixes"
-                  min={0}
-                  max={2000}
-                  step={50}
-                  value={[chargesFixes]}
-                  onValueChange={(value) => setChargesFixes(value[0])}
-                  className="my-4"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>0 €</span>
-                  <span>2000 €</span>
+                <div className="slider-container">
+                  <input
+                    type="range"
+                    min={0}
+                    max={2000}
+                    step={50}
+                    value={chargesFixes}
+                    onChange={(e) => setChargesFixes(Number(e.target.value))}
+                    style={{ width: "100%" }}
+                  />
+                  <div className="slider-values">
+                    <span>0 €</span>
+                    <span>2000 €</span>
+                  </div>
                 </div>
               </div>
 
               {/* Résultat */}
-              <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-700 mb-4">Résultat</h3>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700">Chiffre d'affaires annuel estimé :</span>
-                  <span className="text-2xl font-bold text-blue-700">{caAnnuel.toLocaleString("fr-FR")} € HT</span>
+              <div className="result-box">
+                <h3 style={{ fontSize: "1.2rem", marginBottom: "15px" }}>Résultat</h3>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "1rem" }}>Chiffre d'affaires annuel estimé :</span>
+                  <span className="result-amount">{caAnnuel.toLocaleString("fr-FR")} € HT</span>
                 </div>
               </div>
 
               {/* Bouton suivant */}
-              <div className="mt-8 flex justify-end">
-                <Button 
+              <div style={{ marginTop: "30px", display: "flex", justifyContent: "flex-end" }}>
+                <button 
                   onClick={handleNext} 
+                  className="btn btn-primary"
                   disabled={isLoading}
                 >
                   {isLoading ? "Chargement..." : "Suivant"}
-                </Button>
+                </button>
               </div>
             </div>
           </div>
