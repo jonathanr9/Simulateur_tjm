@@ -1,58 +1,107 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { ArrowLeft, Calculator, ArrowRight } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { ArrowLeft, Calculator, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/router"; // Changé de "next/navigation" à "next/router" pour Next.js 12
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { localStorage, sessionStorage } from "@/utils/storage";
+import { captureUtmParams } from "@/utils/tracking";
 
 export default function SimulateurTJMPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   // États pour les entrées du simulateur
-  const [tjm, setTjm] = useState<number>(500)
-  const [joursParSemaine, setJoursParSemaine] = useState<number>(5)
-  const [semainesParAn, setSemainesParAn] = useState<number>(47)
-  const [chargesFixes, setChargesFixes] = useState<number>(500)
+  const [tjm, setTjm] = useState(500);
+  const [joursParSemaine, setJoursParSemaine] = useState(5);
+  const [semainesParAn, setSemainesParAn] = useState(47);
+  const [chargesFixes, setChargesFixes] = useState(500);
+  const [isLoading, setIsLoading] = useState(false);
 
   // États pour les résultats
-  const [caAnnuel, setCaAnnuel] = useState<number>(0)
+  const [caAnnuel, setCaAnnuel] = useState(0);
+  
+  // État pour stocker les paramètres UTM
+  const [utmParams, setUtmParams] = useState(null);
+
+  // Capturer les paramètres UTM au chargement
+  useEffect(() => {
+    const params = captureUtmParams();
+    if (params) {
+      setUtmParams(params);
+    }
+
+    // Vérifier si une simulation a été abandonnée
+    const savedSimulation = localStorage.getItem('incomplete_simulation');
+    if (savedSimulation) {
+      if (confirm('Voulez-vous reprendre votre simulation précédente?')) {
+        setTjm(savedSimulation.tjm || 500);
+        setJoursParSemaine(savedSimulation.joursParSemaine || 5);
+        setSemainesParAn(savedSimulation.semainesParAn || 47);
+        setChargesFixes(savedSimulation.chargesFixes || 500);
+      } else {
+        localStorage.removeItem('incomplete_simulation');
+      }
+    }
+  }, []);
 
   // Calculer les résultats
   useEffect(() => {
     // Nombre de jours travaillés par an
-    const joursParAn = joursParSemaine * semainesParAn
+    const joursParAn = joursParSemaine * semainesParAn;
 
     // Chiffre d'affaires annuel
-    const ca = tjm * joursParAn
-    setCaAnnuel(ca)
-  }, [tjm, joursParSemaine, semainesParAn])
-
-  const handleNext = () => {
-    // Stocker les données dans sessionStorage pour les récupérer à l'étape suivante
-    sessionStorage.setItem(
-      "simulateurData",
-      JSON.stringify({
+    const ca = tjm * joursParAn;
+    setCaAnnuel(ca);
+    
+    // Sauvegarder l'état actuel uniquement si l'utilisateur a modifié au moins un paramètre
+    if (tjm !== 500 || joursParSemaine !== 5 || semainesParAn !== 47 || chargesFixes !== 500) {
+      const simulationData = {
         tjm,
         joursParSemaine,
         semainesParAn,
         chargesFixes,
-        caAnnuel,
-      }),
-    )
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('incomplete_simulation', simulationData);
+    }
+  }, [tjm, joursParSemaine, semainesParAn, chargesFixes]);
 
-    // Rediriger vers l'étape 2
-    router.push("/outils/simulateur-tjm/etape-2")
-  }
+  const handleNext = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Stocker les données dans sessionStorage pour les récupérer à l'étape suivante
+      sessionStorage.setItem(
+        "simulateurData",
+        {
+          tjm,
+          joursParSemaine,
+          semainesParAn,
+          chargesFixes,
+          caAnnuel,
+          utmSource: utmParams?.source || null,
+          utmMedium: utmParams?.medium || null,
+          utmCampaign: utmParams?.campaign || null
+        }
+      );
+      
+      // Rediriger vers l'étape 2
+      router.push("/outils/simulateur-tjm/etape-2");
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="pt-24 pb-16">
       {/* En-tête de la page avec fond complètement opaque */}
-      <div className="bg-[#0F4C5C] py-16 mb-16">
+      <div className="bg-primary py-16 mb-16">
         <div className="container mx-auto px-4">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -90,12 +139,12 @@ export default function SimulateurTJMPage() {
             className="bg-white rounded-xl p-5 sm:p-8 shadow-lg"
           >
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-semibold text-[#0F4C5C] flex items-center">
+              <h2 className="text-2xl font-semibold text-primary flex items-center">
                 <Calculator className="mr-2 h-5 w-5" />
                 Étape 1 : Paramètres
               </h2>
               <div className="flex items-center">
-                <div className="w-8 h-8 rounded-full bg-[#0F4C5C] text-white flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
                   1
                 </div>
                 <div className="w-8 h-1 bg-gray-300"></div>
@@ -235,15 +284,19 @@ export default function SimulateurTJMPage() {
                 <h3 className="text-lg font-medium text-gray-700 mb-4">Résultat</h3>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Chiffre d'affaires annuel estimé :</span>
-                  <span className="text-2xl font-bold text-[#0F4C5C]">{caAnnuel.toLocaleString("fr-FR")} € HT</span>
+                  <span className="text-2xl font-bold text-primary">{caAnnuel.toLocaleString("fr-FR")} € HT</span>
                 </div>
               </div>
 
               {/* Bouton suivant */}
               <div className="mt-8 flex justify-end">
-                <Button onClick={handleNext} className="bg-gradient-to-r from-[#0F4C5C] to-[#0EA5E9] text-white">
-                  Suivant
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                <Button 
+                  onClick={handleNext} 
+                  className="bg-gradient-to-r from-primary to-primary-light text-white"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Chargement..." : "Suivant"}
+                  {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
               </div>
             </div>
@@ -251,6 +304,5 @@ export default function SimulateurTJMPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
