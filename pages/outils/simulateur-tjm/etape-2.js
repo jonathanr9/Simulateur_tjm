@@ -51,16 +51,21 @@ export default function SimulateurTJMEtape2Page() {
         simulateurData,
         utm: utmParams
       };
+    
+        // Envoyer les données à l'API
+    const response = await fetch('/api/saveToSheet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(contactData),
+    });
 
-      // API temporairement simulée pour développement
-      // En production, faites un appel API réel ici
-      console.log("Données à envoyer:", contactData);
-      
-      // Simuler une API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Stocker les données du formulaire
-      sessionStore.setItem("contactData", contactData);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Erreur lors de l\'enregistrement');
+    }
 
       // Nettoyer les données incomplètes de la simulation
       localStore.removeItem('incomplete_simulation');
