@@ -7,25 +7,19 @@ export default function SimulateurTJMEtape3Page() {
   const router = useRouter();
   const [contactData, setContactData] = useState(null);
 
-  // Récupérer les données de contact au chargement de la page
   useEffect(() => {
     const data = sessionStore.getItem("contactData");
     if (data) {
       setContactData(data);
     } else {
-      // Rediriger vers l'étape 1 si aucune donnée n'est trouvée
       router.push("/outils/simulateur-tjm");
     }
-
-    // Nettoyer le localStorage après confirmation
     localStore.removeItem('incomplete_simulation');
   }, [router]);
 
-  // Fonction pour suivre les clics sur le bouton de prise de rendez-vous
-  const handleRdvClick = () => {
-    // Ici vous pourriez ajouter un tracking d'événement
+  function handleRdvClick() {
     console.log("Prise de rendez-vous", contactData?.email);
-  };
+  }
 
   return (
     <div>
@@ -38,15 +32,13 @@ export default function SimulateurTJMEtape3Page() {
 
       <div className="container">
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-          {/* Utiliser legacyBehavior avec Link */}
           <Link href="/" legacyBehavior>
             <a className="btn btn-outline" style={{ marginBottom: "20px", display: "inline-block" }}>
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </a>
           </Link>
 
-          {/* Étape 3 : Confirmation */}
-          <div className="simulator-card text-center">
+          <div className="simulator-card" style={{ textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div className="step-number step-inactive">1</div>
@@ -66,26 +58,25 @@ export default function SimulateurTJMEtape3Page() {
             </h2>
 
             <p style={{ maxWidth: "600px", margin: "0 auto 30px", fontSize: "1.1rem" }}>
-              Merci pour votre intérêt{contactData?.nom ? `, ${contactData.nom}` : ''}. Vos informations ont été transmises à notre équipe. Nous vous contacterons très
-              prochainement pour discuter de votre situation et vous proposer un accompagnement personnalisé.
+              Merci pour votre intérêt
+              {contactData?.nom ? `, ${contactData.nom}` : ''}. 
+              Vos informations ont été transmises à notre équipe.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "15px", alignItems: "center" }}>
-              
+              <a 
                 href="https://calendly.com/votre-lien-calendly"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleRdvClick}
                 className="btn btn-primary"
-                style={{ display: "inline-block" }}
               >
                 Prendre rendez-vous directement
               </a>
 
-              {/* Utiliser legacyBehavior avec Link */}
               <Link href="/" legacyBehavior>
                 <a className="btn btn-outline">
-                  Retour à l'accueil
+                  Retour à l&apos;accueil
                 </a>
               </Link>
             </div>
